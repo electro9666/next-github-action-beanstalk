@@ -37,6 +37,9 @@ jobs:
       run: npm run build
     - name: Generate deployment package
       run: zip -r deploy.zip .next public package.json
+    - name: Generate version-id
+      id: generate-uuid
+      uses: filipstefansson/uuid-action@v1
     - name: Deploy to ElasticBeanstalk
       uses: einaregilsson/beanstalk-deploy@v10
       with:
@@ -46,6 +49,6 @@ jobs:
         environment_name: next-github-action-beanstalk-dev
         region: ap-northeast-2
         deployment_package: deploy.zip
-        version_label: 12345
-        version_description: 'abcd'
+        version_label: ${{ steps.generate-uuid.outputs.uuid }}
+        version_description: ${{ github.SHA }}
         wait_for_environment_recovery: 180
